@@ -100,27 +100,21 @@ import sun.reflect.annotation.*;
 import sun.reflect.misc.ReflectUtil;
 
 /**
- * Instances of the class {@code Class} represent classes and
- * interfaces in a running Java application. An enum class and a record
- * class are kinds of class; an annotation interface is a kind of
- * interface. Every array also belongs to a class that is reflected as
- * a {@code Class} object that is shared by all arrays with the same
- * element type and number of dimensions.  The primitive Java types
- * ({@code boolean}, {@code byte}, {@code char}, {@code short}, {@code
- * int}, {@code long}, {@code float}, and {@code double}), and the
- * keyword {@code void} are also represented as {@code Class} objects.
+ * A valid <b>runtime type</b> in this Java application, of one of
+ * three kinds: a class or interface (already defined by some class loader), an
+ * array type, or a primitive type (including the {@code void} pseudo-type).
+ * Importantly, this class has no knowledge of type arguments, which may be
+ * present in <i>compile-time</i> types but are "erased" at runtime; for
+ * example there is just one instance representing {@code java.util.ArrayList}.
  *
- * <p> {@code Class} has no public constructor. Instead a {@code Class}
- * object is constructed automatically by the Java Virtual Machine when
- * a class is derived from the bytes of a {@code class} file through
- * the invocation of one of the following methods:
- * <ul>
- * <li> {@link ClassLoader#defineClass(String, byte[], int, int) ClassLoader::defineClass}
- * <li> {@link java.lang.invoke.MethodHandles.Lookup#defineClass(byte[])
- *      java.lang.invoke.MethodHandles.Lookup::defineClass}
- * <li> {@link java.lang.invoke.MethodHandles.Lookup#defineHiddenClass(byte[], boolean, MethodHandles.Lookup.ClassOption...)
- *      java.lang.invoke.MethodHandles.Lookup::defineHiddenClass}
- * </ul>
+ * <p> Instances of this type are commonly obtained via either a class
+ * literal or one of the overloads of {@link #forName}:
+ *
+ * {@snippet lang="java" :
+ * Class<String> sc1 = String.class;
+ * Class<?> sc2 = Class.forName("java.lang.String"); // need to handle exceptions
+ * assert sc1 == sc2; // true
+ * }
  *
  * <p> The methods of class {@code Class} expose many characteristics of a
  * class or interface. Most characteristics are derived from the {@code class}
@@ -139,10 +133,8 @@ import sun.reflect.misc.ReflectUtil;
  *                        " is " + obj.getClass().getName());
  * }}
  *
- * It is also possible to get the {@code Class} object for a named
- * class or interface (or for {@code void}) using a <dfn>class literal</dfn>
- * (JLS {@jls 15.8.2}).
- * For example:
+ * <p> The {@code Class} instance corresponding to any denotable type can be
+ * obtained using a <dfn>class literal</dfn> (JLS {@jls 15.8.2}). For example:
  *
  * {@snippet lang="java" :
  * System.out.println("The name of class Foo is: " + Foo.class.getName()); // @highlight substring="Foo.class"
@@ -218,6 +210,7 @@ import sun.reflect.misc.ReflectUtil;
  *
  * @see     java.lang.ClassLoader#defineClass(byte[], int, int)
  * @since   1.0
+ * @jls 15.8.2 Class Literals
  */
 public final class Class<T> implements java.io.Serializable,
                               GenericDeclaration,
@@ -247,16 +240,20 @@ public final class Class<T> implements java.io.Serializable,
     }
 
     /**
-     * Converts the object to a string. The string representation is the
-     * string "class" or "interface", followed by a space, and then by the
-     * name of the class in the format returned by {@code getName}.
-     * If this {@code Class} object represents a primitive type,
-     * this method returns the name of the primitive type.  If
-     * this {@code Class} object represents void this method returns
-     * "void". If this {@code Class} object represents an array type,
-     * this method returns "class " followed by {@code getName}.
+     * Returns the string representation of this {@code Class} object,
+     * depending on its kind:
      *
-     * @return a string representation of this {@code Class} object.
+     * <ul>
+     * <li>For an interface: the string {@code "interface"}, one space,
+     *     then the interface's name as returned by {@link #getName()}
+     * <li>For any other class, or an array type: the string
+     *     {@code "class"}, one space, then the name as returned by
+     *     {@link #getName()}
+     * <li>For a primitive type (including {@code void}): the name of
+     *     that primitive type, such as {@code "int"}
+     * </ul>
+     *
+     * @return the string representation of this {@code Class} object.
      */
     public String toString() {
         String kind = isInterface() ? "interface " : isPrimitive() ? "" : "class ";
@@ -268,7 +265,7 @@ public final class Class<T> implements java.io.Serializable,
      * information about modifiers, {@link #isSealed() sealed}/{@code
      * non-sealed} status, and type parameters.
      *
-     * The string is formatted as a list of type modifiers, if any,
+     * <p>The string is formatted as a list of type modifiers, if any,
      * followed by the kind of type (empty string for primitive types
      * and {@code class}, {@code enum}, {@code interface},
      * {@code @interface}, or {@code record} as appropriate), followed
@@ -276,12 +273,12 @@ public final class Class<T> implements java.io.Serializable,
      * comma-separated list of the type's type parameters, if any,
      * including informative bounds on the type parameters, if any.
      *
-     * A space is used to separate modifiers from one another and to
+     * <p>A space is used to separate modifiers from one another and to
      * separate any modifiers from the kind of type. The modifiers
      * occur in canonical order. If there are no type parameters, the
      * type parameter list is elided.
      *
-     * For an array type, the string starts with the type name,
+     * <p>For an array type, the string starts with the type name,
      * followed by an angle-bracketed comma-separated list of the
      * type's type parameters, if any, followed by a sequence of
      * {@code []} characters, one set of brackets per dimension of
@@ -4778,6 +4775,7 @@ public final class Class<T> implements java.io.Serializable,
                                    .toArray(s -> new Class<?>[s]);
             }
         }
+
         if (subClasses.length > 0) {
             // If we return some classes we need a security check:
             @SuppressWarnings("removal")

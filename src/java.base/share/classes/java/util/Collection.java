@@ -259,46 +259,63 @@ public interface Collection<E> extends Iterable<E> {
     // Query Operations
 
     /**
-     * Returns the number of elements in this collection.  If this collection
-     * contains more than {@code Integer.MAX_VALUE} elements, returns
-     * {@code Integer.MAX_VALUE}.
-     *
-     * @return the number of elements in this collection
+     * {@return the number of elements in this collection, or
+     * {@link Integer#MAX_VALUE} if there are more than that many}
      */
     int size();
 
     /**
-     * Returns {@code true} if this collection contains no elements.
+     * Returns {@code true} if this collection contains no elements (its
+     * size is zero).
      *
      * @return {@code true} if this collection contains no elements
      */
     boolean isEmpty();
 
     /**
-     * Returns {@code true} if this collection contains the specified element.
-     * More formally, returns {@code true} if and only if this collection
-     * contains at least one element {@code e} such that
-     * {@code Objects.equals(o, e)}.
+     * Returns {@code true} if {@code target} is present as an element
+     * in this collection. More precisely, a true result means there is
+     * <i>some</i> element {@code e} in this collection such that
+     * {@code Objects.equals(e, target)}.
      *
-     * @param o element whose presence in this collection is to be tested
-     * @return {@code true} if this collection contains the specified
-     *         element
-     * @throws ClassCastException if the type of the specified element
-     *         is incompatible with this collection
+     * @apiNote
+     * <p><b>Warning:</b> some {@code Collection} subtypes respecify
+     * this behavior to be based on a different equivalence test
+     * (besides {@link Objects#equals}), which can be dangerous. For
+     * example, {@link NavigableSet} requires using a comparator
+     * instead, and if the comparator supplied is inconsistent with
+     * {@code equals} (as explained in detail by {@link Comparator}),
+     * the resulting set may not obey this specification, with
+     * unpredictable results.
+     *
+     * @param  target the object (or {@code null}) to look for in this
+     *         collection
+     * @return {@code true} if there is any element {@code e} in this
+     *         collection for which {@code Objects.equals(e, target)}
+     *         is true 
+     * @throws NullPointerException if this collection does not permit
+     *         null elements and {@code target} is null
      *         ({@linkplain Collection##optional-restrictions optional})
-     * @throws NullPointerException if the specified element is null and this
-     *         collection does not permit null elements
+     * @throws ClassCastException if it is impossible for {@code target}
+     *         to be present in this collection for any other reason
      *         ({@linkplain Collection##optional-restrictions optional})
      */
-    boolean contains(Object o);
+    boolean contains(Object target);
 
     /**
-     * Returns an iterator over the elements in this collection.  There are no
-     * guarantees concerning the order in which the elements are returned
-     * (unless this collection is an instance of some class that provides a
-     * guarantee).
+     * Returns a new iterator over all the elements in this collection,
+     * in an unspecified order.
      *
-     * @return an {@code Iterator} over the elements in this collection
+     * <p>The returned iterator tracks its current position in this
+     * collection independently from any iterators returned by other
+     * calls to this method.
+     *
+     * <p>If the returned iterator supports the optional {@code remove}
+     * operation, that operation removes the iterator's current element
+     * from this collection, but how this removal affects other existing
+     * iterators already in progress is unspecified.
+     *
+     * @return a new iterator over the elements in this collection
      */
     Iterator<E> iterator();
 
@@ -421,99 +438,102 @@ public interface Collection<E> extends Iterable<E> {
     // Modification Operations
 
     /**
-     * Ensures that this collection contains the specified element (optional
-     * operation).  Returns {@code true} if this collection changed as a
-     * result of the call.  (Returns {@code false} if this collection does
-     * not permit duplicates and already contains the specified element.)<p>
+     * Adds {@code newElement} as an element in this collection, if it
+     * is not already present, or if this collection accepts duplicate
+     * elements (optional operation). When this method completes
+     * normally, {@code contains(newElement)} will be true.
+     * 
+     * @apiNote
+     * To add multiple elements at once, use {@link #addAll} or
+     * {@link Collections#addAll}.
      *
-     * Collections that support this operation may place limitations on what
-     * elements may be added to this collection.  In particular, some
-     * collections will refuse to add {@code null} elements, and others will
-     * impose restrictions on the type of elements that may be added.
-     * Collection classes should clearly specify in their documentation any
-     * restrictions on what elements may be added.<p>
-     *
-     * If a collection refuses to add a particular element for any reason
-     * other than that it already contains the element, it <i>must</i> throw
-     * an exception (rather than returning {@code false}).  This preserves
-     * the invariant that a collection always contains the specified element
-     * after this call returns.
-     *
-     * @param e element whose presence in this collection is to be ensured
-     * @return {@code true} if this collection changed as a result of the
-     *         call
-     * @throws UnsupportedOperationException if the {@code add} operation
-     *         is not supported by this collection
-     * @throws ClassCastException if the class of the specified element
-     *         prevents it from being added to this collection
-     * @throws NullPointerException if the specified element is null and this
-     *         collection does not permit null elements
-     * @throws IllegalArgumentException if some property of the element
-     *         prevents it from being added to this collection
-     * @throws IllegalStateException if the element cannot be added at this
-     *         time due to insertion restrictions
+     * @param  newElement the object (or {@code null}) to be added
+     * @return {@code true} if {@code newElement} is added; {@code false} if
+     *         this collection was left unmodified because {@code newElement}
+     *         was already present
+     * @throws UnsupportedOperationException if this implementation does
+     *         not support the {@code add} operation
+     * @throws IllegalStateException if no elements can be added to this
+     *         collection due to its current state
+     * @throws NullPointerException if {@code newElement} is null and
+     *         this collection does not permit null elements
+     * @throws ClassCastException if this collection does not accept
+     *         elements of {@code newElement}'s runtime type
+     * @throws IllegalArgumentException if this collection does not
+     *         accept {@code newElement} as an element for any other
+     *         reason
      */
-    boolean add(E e);
+    boolean add(E newElement);
 
     /**
-     * Removes a single instance of the specified element from this
-     * collection, if it is present (optional operation).  More formally,
-     * removes an element {@code e} such that
-     * {@code Objects.equals(o, e)}, if
-     * this collection contains one or more such elements.  Returns
-     * {@code true} if this collection contained the specified element (or
-     * equivalently, if this collection changed as a result of the call).
+     * Removes a single occurrence of {@code element} from this
+     * collection, if present (optional operation). More precisely, this
+     * method removes any one element {@code e} such that {@code
+     * Objects.equals(e, element)} is true, or leaves the collection
+     * unchanged if no such element exists.
      *
-     * @param o element to be removed from this collection, if present
-     * @return {@code true} if an element was removed as a result of this call
-     * @throws ClassCastException if the type of the specified element
-     *         is incompatible with this collection
+     * @apiNote
+     * This does <i>not</i> generally guarantee that
+     * {@code contains(element)} will henceforth return {@code false}.
+     * To remove <i>all</i> occurrences of the element instead, use
+     * {@code removeAll(Collections.singleton(element))}.
+     *
+     * @param  element the object (or {@code null}) to be removed from
+     *         this collection if it is present
+     * @return {@code true} if an element was removed as a result of
+     *         this call; {@code false} if the collection remained
+     *         unchanged because {@code element} was not present
+     * @throws UnsupportedOperationException if this implementation does
+     *         not support the {@code remove} operation
+     * @throws NullPointerException if {@code element} is null and this
+     *         implementation does not permit null elements
      *         ({@linkplain Collection##optional-restrictions optional})
-     * @throws NullPointerException if the specified element is null and this
-     *         collection does not permit null elements
+     * @throws ClassCastException if this collection does not accept
+     *         elements of {@code element}'s runtime type
      *         ({@linkplain Collection##optional-restrictions optional})
-     * @throws UnsupportedOperationException if the {@code remove} operation
-     *         is not supported by this collection
      */
-    boolean remove(Object o);
+    boolean remove(Object element);
 
 
     // Bulk Operations
 
     /**
-     * Returns {@code true} if this collection contains all of the elements
-     * in the specified collection.
+     * Returns {@code true} if this collection
+     * {@linkplain #contains contains} at least one occurrence of each
+     * element in {@code targets}. Note that duplicate occurrences in
+     * {@code targets} have no effect on this result.
      *
-     * @param  c collection to be checked for containment in this collection
-     * @return {@code true} if this collection contains all of the elements
-     *         in the specified collection
-     * @throws ClassCastException if the types of one or more elements
-     *         in the specified collection are incompatible with this
-     *         collection
+     * @param  targets the elements to look for in this collection
+     * @return {@code true} if this collection contains every element in
+     *         {@code targets} (including if {@code targets} is empty)
+     * @throws NullPointerException if at least one element in
+     *         {@code targets} is null and this implementation does not
+     *         permit null elements
      *         ({@linkplain Collection##optional-restrictions optional})
-     * @throws NullPointerException if the specified collection contains one
-     *         or more null elements and this collection does not permit null
-     *         elements
+     * @throws ClassCastException if the type of at least one element in
+     *         {@code targets} is incompatible with this collection
      *         ({@linkplain Collection##optional-restrictions optional})
-     *         or if the specified collection is null.
-     * @see    #contains(Object)
      */
-    boolean containsAll(Collection<?> c);
+    boolean containsAll(Collection<?> targets);
 
     /**
-     * Adds all of the elements in the specified collection to this collection
-     * (optional operation).  The behavior of this operation is undefined if
-     * the specified collection is modified while the operation is in progress.
-     * (This implies that the behavior of this call is undefined if the
-     * specified collection is this collection, and this collection is
-     * nonempty.) If the specified collection has a defined
-     * <a href="SequencedCollection.html#encounter">encounter order</a>,
-     * processing of its elements generally occurs in that order.
+     * Adds each element in {@code newElements} to this collection as
+     * specified by {@link #add} (optional operation). When this method
+     * completes normally, {@code containsAll(newElements)} will be
+     * true.
      *
-     * @param c collection containing elements to be added to this collection
+     * <p>Processing generally occurs in the given collection's <a
+     * href="SequencedCollection.html#encounter">encounter order</a>, if
+     * it has one. If this method cannot successfully process <i>all</i>
+     * of the given elements, it must throw an exception. In this case,
+     * any subset of the elements might have been added successfully.
+     *
+     * @param  newElements the elements to add to this collection. If this
+     *         collection is modified during execution, the results of this
+     *         method are undefined.
      * @return {@code true} if this collection changed as a result of the call
-     * @throws UnsupportedOperationException if the {@code addAll} operation
-     *         is not supported by this collection
+     * @throws UnsupportedOperationException if this implementation does not
+     *         support the {@code addAll} operation
      * @throws ClassCastException if the class of an element of the specified
      *         collection prevents it from being added to this collection
      * @throws NullPointerException if the specified collection contains a
@@ -526,59 +546,58 @@ public interface Collection<E> extends Iterable<E> {
      *         this time due to insertion restrictions
      * @see #add(Object)
      */
-    boolean addAll(Collection<? extends E> c);
+    boolean addAll(Collection<? extends E> newElements);
 
     /**
-     * Removes all of this collection's elements that are also contained in the
-     * specified collection (optional operation).  After this call returns,
-     * this collection will contain no elements in common with the specified
-     * collection.
+     * Removes <i>every</i> occurrence of <i>each</i> of the given
+     * elements from this collection (optional operation). Elements in
+     * {@code removeThese} that are not present in this collection have
+     * no effect. When this method completes normally, {@code
+     * Collections.disjoint(this, elements)} will be true.
      *
-     * @param c collection containing elements to be removed from this collection
+     * @param  removeThese the elements to be removed from this collection
      * @return {@code true} if this collection changed as a result of the
      *         call
      * @throws UnsupportedOperationException if the {@code removeAll} operation
      *         is not supported by this collection
-     * @throws ClassCastException if the types of one or more elements
-     *         in this collection are incompatible with the specified
-     *         collection
+     * @throws ClassCastException if at least one element in {@code
+     *         removeThese} has a type incompatible with this collection
      *         ({@linkplain Collection##optional-restrictions optional})
-     * @throws NullPointerException if this collection contains one or more
-     *         null elements and the specified collection does not support
-     *         null elements
+     * @throws NullPointerException if either collection does not permit
+     *         null elements, and the other contains a null element
      *         ({@linkplain Collection##optional-restrictions optional})
-     *         or if the specified collection is null
-     * @see #remove(Object)
-     * @see #contains(Object)
+     *         or if {@code removeThese} is null
      */
-    boolean removeAll(Collection<?> c);
+    boolean removeAll(Collection<?> removeThese);
 
     /**
-     * Removes all of the elements of this collection that satisfy the given
-     * predicate (optional operation).  Errors or runtime exceptions thrown during
-     * iteration or by the predicate are relayed to the caller.
+     * Removes each element from this collection that satisfies the
+     * given predicate (optional operation). When this method completes
+     * normally, {@code stream().noneMatch(shouldRemove)} will be true.
      *
      * @implSpec
-     * The default implementation traverses all elements of the collection using
-     * its {@link #iterator}.  Each matching element is removed using
-     * {@link Iterator#remove()}.  If the collection's iterator does not
-     * support removal then an {@code UnsupportedOperationException} will be
-     * thrown on the first matching element.
+     * The default implementation traverses all elements of this
+     * collection using its {@link #iterator}. Each matching element is
+     * removed using {@link Iterator#remove()}. If the collection's
+     * iterator does not support removal then an
+     * {@code UnsupportedOperationException} will be thrown on the first
+     * matching element.
      *
-     * @param filter a predicate which returns {@code true} for elements to be
-     *        removed
+     * @param  shouldRemove a predicate that accepts an element of this
+     *         collection and returns true if it should be removed
      * @return {@code true} if any elements were removed
-     * @throws NullPointerException if the specified filter is null
-     * @throws UnsupportedOperationException if the {@code removeIf} operation
-     *         is not supported by this collection
+     * @throws NullPointerException if the {@code shouldRemove}
+     *         predicate is null
+     * @throws UnsupportedOperationException if this implementation does
+     *         not support the {@code removeIf} operation
      * @since 1.8
      */
-    default boolean removeIf(Predicate<? super E> filter) {
-        Objects.requireNonNull(filter);
+    default boolean removeIf(Predicate<? super E> shouldRemove) {
+        Objects.requireNonNull(shouldRemove);
         boolean removed = false;
         final Iterator<E> each = iterator();
         while (each.hasNext()) {
-            if (filter.test(each.next())) {
+            if (shouldRemove.test(each.next())) {
                 each.remove();
                 removed = true;
             }
@@ -587,35 +606,36 @@ public interface Collection<E> extends Iterable<E> {
     }
 
     /**
-     * Retains only the elements in this collection that are contained in the
-     * specified collection (optional operation).  In other words, removes from
-     * this collection all of its elements that are not contained in the
-     * specified collection.
+     * Removes every element from this collection that is <i>not</i>
+     * also contained in {code retainThese} (optional operation). When
+     * this method completes normally,
+     * {@code retainThese.containsAll(this)} will be true. Elements in
+     * {@code retainThese} that are not present in this collection have
+     * no effect. 
      *
-     * @param c collection containing elements to be retained in this collection
-     * @return {@code true} if this collection changed as a result of the call
-     * @throws UnsupportedOperationException if the {@code retainAll} operation
-     *         is not supported by this collection
-     * @throws ClassCastException if the types of one or more elements
-     *         in this collection are incompatible with the specified
-     *         collection
+     * @param  retainThese the elements to be retained in this collection,
+     *         while all others are removed
+     * @return {@code true} if this collection changed as a result of
+     *         the call
+     * @throws UnsupportedOperationException if this implementation does
+     *         not support the {@code retainAll} operation
+     * @throws ClassCastException if at least one element in {@code
+     *         retainThese} has a type incompatible with this collection
      *         ({@linkplain Collection##optional-restrictions optional})
-     * @throws NullPointerException if this collection contains one or more
-     *         null elements and the specified collection does not permit null
-     *         elements
+     * @throws NullPointerException if either collection does not permit
+     *         null elements, and the other contains a null element
      *         ({@linkplain Collection##optional-restrictions optional})
-     *         or if the specified collection is null
+     *         or if {@code retainThese} is null
      * @see #remove(Object)
-     * @see #contains(Object)
      */
-    boolean retainAll(Collection<?> c);
+    boolean retainAll(Collection<?> retainThese);
 
     /**
      * Removes all of the elements from this collection (optional operation).
-     * The collection will be empty after this method returns.
+     * When this method completes normally, {@link #isEmpty} will be true.
      *
-     * @throws UnsupportedOperationException if the {@code clear} operation
-     *         is not supported by this collection
+     * @throws UnsupportedOperationException if this implementation does
+     *         not support the {@code clear} operation
      */
     void clear();
 

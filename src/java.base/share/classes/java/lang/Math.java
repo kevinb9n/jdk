@@ -147,9 +147,7 @@ public final class Math {
     public static final double PI = 3.141592653589793;
 
     /**
-     * The {@code double} value that is closer than any other to
-     * <i>tau</i> (&tau;), the ratio of the circumference of a circle
-     * to its radius.
+     * The circle constant: the ratio of the circumference of a circle to its radius, rounded to the nearest {@code double} value.
      *
      * @apiNote
      * The value of <i>pi</i> is one half that of <i>tau</i>; in other

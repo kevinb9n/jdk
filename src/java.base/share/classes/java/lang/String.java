@@ -66,12 +66,13 @@ import sun.nio.cs.US_ASCII;
 import sun.nio.cs.UTF_8;
 
 /**
- * The {@code String} class represents character strings. All
+ * An immutable, in-memory sequence of {@code char} values, intended to
+ * represent a fragment of text in UTF-16 encoding. All
  * string literals in Java programs, such as {@code "abc"}, are
  * implemented as instances of this class.
  * <p>
- * Strings are constant; their values cannot be changed after they
- * are created. String buffers support mutable strings.
+ * Strings are immutable: their values cannot be changed after they
+ * are created. {@link StringBuilder} supports mutable strings.
  * Because String objects are immutable they can be shared. For example:
  * <blockquote><pre>
  *     String str = "abc";
@@ -119,7 +120,7 @@ import sun.nio.cs.UTF_8;
  *
  * <p>Unless otherwise noted, methods for comparing Strings do not take locale
  * into account.  The {@link java.text.Collator} class provides methods for
- * finer-grain, locale-sensitive String comparison.
+ * finer-grained, locale-sensitive String comparison.
  *
  * @implNote The implementation of the string concatenation operator is left to
  * the discretion of a Java compiler, as long as the compiler ultimately conforms
@@ -127,7 +128,7 @@ import sun.nio.cs.UTF_8;
  * may implement the operator with {@code StringBuffer}, {@code StringBuilder},
  * or {@code java.lang.invoke.StringConcatFactory} depending on the JDK version. The
  * implementation of string conversion is typically through the method {@code toString},
- * defined by {@code Object} and inherited by all classes in Java.
+ * defined by {@code Object} and inherited or overridden by all classes in Java.
  *
  * @author  Lee Boynton
  * @author  Arthur van Hoff
@@ -1582,12 +1583,10 @@ public final class String
     }
 
     /**
-     * Returns the length of this string.
-     * The length is equal to the number of <a href="Character.html#unicode">Unicode
-     * code units</a> in the string.
+     * Returns the number of {@code char} values
+     * (<a href="Character.html#unicode">Unicode code units</a>) in this string.
      *
-     * @return  the length of the sequence of characters represented by this
-     *          object.
+     * @return  the number of {@code char} values in this string, possibly zero.
      */
     public int length() {
         return value.length >> coder();
@@ -1609,7 +1608,7 @@ public final class String
     /**
      * Returns the {@code char} value at the
      * specified index. An index ranges from {@code 0} to
-     * {@code length() - 1}. The first {@code char} value of the sequence
+     * {@code length() - 1} inclusive. The first {@code char} value of the sequence
      * is at index {@code 0}, the next at index {@code 1},
      * and so on, as for array indexing.
      *

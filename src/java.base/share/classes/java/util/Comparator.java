@@ -33,11 +33,10 @@ import java.util.function.ToDoubleFunction;
 import java.util.Comparators;
 
 /**
- * A comparison function, which imposes a <i>total ordering</i> on
- * some collection of objects.  Comparators can be passed to a sort
- * method (such as {@link Collections#sort(List,Comparator)
- * Collections.sort} or {@link Arrays#sort(Object[],Comparator)
- * Arrays.sort}) to allow precise control over the sort order.
+ * A comparison function, which imposes a <i>total ordering</i> over
+ * all objects of type {@code T}. A comparator can be used to
+ * {@linkplain Collections#sort(List,Comparator) sort} an existing list,
+ * or blahblah.
  * Comparators can also be used to control the order of certain data
  * structures (such as {@linkplain SortedSet sorted sets} or
  * {@linkplain SortedMap sorted maps}), or to provide an ordering for
