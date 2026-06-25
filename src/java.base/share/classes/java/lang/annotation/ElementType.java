@@ -44,7 +44,7 @@ package java.lang.annotation;
  *
  * <p>Most annotations in Java code are <b>declaration annotations</b>,
  * which act like modifiers of declarations (such as a field or method
- * declaration). The constants of this class cover all ten kinds of
+ * declaration). The constants of this class cover all the kinds of
  * annotatable declarations, plus a subcategory of {@link #TYPE} called
  * {@link #ANNOTATION_TYPE}. An annotation interface can be used as a
  * declaration annotation if it either omits {@link
@@ -60,7 +60,7 @@ package java.lang.annotation;
  *
  * <h3 id="ambiguous">Ambiguous contexts</h3>
  *
- * <p>For six kinds of declarations, type-use annotations can also
+ * <p>For some kinds of declarations, type-use annotations can also
  * appear freely intermingled with declaration annotations and
  * modifiers:
  *
@@ -80,7 +80,7 @@ package java.lang.annotation;
  *
  * <p>An annotation interface may specify both {@link #TYPE_USE} and
  * declaration targets, and thereby be fully usable as either kind.
- * When an annotation of this type appears in one of the six ambiguous
+ * When an annotation of this type appears in one of the ambiguous
  * contexts just listed, it functions as <em>both</em> a declaration
  * annotation and a type-use annotation at the same time. The results
  * may be counterintuitive in two cases: when the variable type or
@@ -122,6 +122,7 @@ public enum ElementType {
      *
      * @jls 8.3 Field Declarations
      * @jls 8.9.1 Enum Constants
+     * @jls 8.10.3 Record Members
      */
     FIELD,
 
@@ -137,6 +138,7 @@ public enum ElementType {
      * @jls 8.4 Method Declarations (of classes)
      * @jls 9.4 Method Declarations (of interfaces)
      * @jls 9.6.1 Annotation Interface Elements
+     * @jls 8.10.3 Record Members
      */
     METHOD,
 
@@ -157,6 +159,7 @@ public enum ElementType {
      *
      * @jls 8.4.1 Formal Parameters
      * @jls 15.27.1 Lambda Parameters
+     * @jls 8.10.4 Record Constructor Declarations
      */
     PARAMETER,
 
@@ -220,7 +223,8 @@ public enum ElementType {
      * href="#ambiguous">ambiguous cases</a> above.
      *
      * <p>Specifying this target automatically includes the declaration
-     * targets {@link #TYPE} and {@link #TYPE_PARAMETER}.
+     * targets {@link #TYPE} and {@link #TYPE_PARAMETER}, even though
+     * these are not type contexts.
      *
      * @since 1.8
      * @jls 4.11 Where Types Are Used
