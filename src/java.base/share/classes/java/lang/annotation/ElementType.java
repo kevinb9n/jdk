@@ -142,7 +142,7 @@ public enum ElementType {
      * during compilation.
      *
      * <p>Lambda parameter declarations using the <em>concise
-     * syntax</em> cannot be annotated; either a type or the `var`
+     * syntax</em> cannot be annotated; either a type or the {@code var}
      * keyword must be provided for each.
      */
     PARAMETER,
