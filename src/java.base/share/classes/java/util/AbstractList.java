@@ -35,7 +35,8 @@ import java.util.function.Consumer;
  * be used in preference to this class.
  *
  * <p>To implement an unmodifiable list, the programmer needs only to extend
- * this class and provide implementations for the {@link #get(int)} and
+ * this class, consider whether to also implement the {@link RandomAccess}
+ * interface, and provide implementations for the {@link #get(int)} and
  * {@link List#size() size()} methods.
  *
  * <p>To implement a modifiable list, the programmer must additionally
