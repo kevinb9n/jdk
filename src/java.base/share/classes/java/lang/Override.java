@@ -36,12 +36,10 @@ import java.lang.annotation.*;
  * <p>There are three cases:
  *
  * <ul>
- *   <li>The method does override or implement an accessible method
- *       from at least one supertype of its declaring class or
- *       interface.
+ *   <li>The method does override or implement a method declared in a
+ *       supertype.
  *   <li>The method is override-equivalent to a public method of the
- *       {@link Object} class. (This allows for interface methods to
- *       "override" such methods.)
+ *       {@link Object} class. (This matters for interface methods.)
  *   <li>The method is an <em>accessor method</em> of a record class
  *       (explicit or implicit).
  * </ul>
