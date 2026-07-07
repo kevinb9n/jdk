@@ -28,22 +28,41 @@ package java.lang;
 import java.lang.annotation.*;
 
 /**
- * Indicates that a method declaration is intended to override a
- * method declaration in a supertype. If a method is annotated with
- * this annotation type compilers are required to generate an error
- * message unless at least one of the following conditions hold:
+ * Indicates that the annotated method replaces one that would have
+ * been inherited (or otherwise implicitly declared). Using this
+ * annotation is optional, so its absence does not guarantee that the
+ * method is newly introduced.
  *
- * <ul><li>
- * The method does override or implement a method declared in a
- * supertype.
- * </li><li>
- * The method has a signature that is override-equivalent to that of
- * any public method declared in {@linkplain Object}.
- * </li></ul>
+ * <p>There are three cases:
  *
- * @author  Peter von der Ah&eacute;
- * @author  Joshua Bloch
+ * <ul>
+ *   <li>The method does override or implement an accessible method
+ *       from at least one supertype of its declaring class or
+ *       interface.
+ *   <li>The method is override-equivalent to a public method of the
+ *       {@link Object} class. (This allows for interface methods to
+ *       "override" such methods.)
+ *   <li>The method is an <em>accessor method</em> of a record class
+ *       (explicit or implicit).
+ * </ul>
+ *
+ * <p>In any other case, Java compilers are required to generate an
+ * error.
+ *
+ * <p><b>Note:</b> although a static method may <em>hide</em> another
+ * static method, this is not true overriding, and this annotation
+ * does not apply.
+ *
+ * <p><b>Warning:</b> annotating a record component declaration merely
+ * propagates that annotation to an implicitly declared accessor
+ * method. In that location it is always valid, by the third point in
+ * the list above, so it does <em>not</em> enforce that any supertype
+ * method is being overridden.
+ *
+ * @author Peter von der Ah&eacute;
+ * @author Joshua Bloch
  * @jls 8.4.8 Inheritance, Overriding, and Hiding
+ * @jls 8.10.3 Record Members
  * @jls 9.4.1 Inheritance and Overriding
  * @jls 9.6.4.4 @Override
  * @since 1.5
